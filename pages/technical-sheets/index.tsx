@@ -56,7 +56,8 @@ export default function TechnicalSheets({ data }) {
       type: res.data.status ? 'success' : 'error',
       message: res.data.message
     });
-    setRows(res.data.technical_sheets)
+    setRows(res.data.technical_sheets);
+    setOpenAlert(false);
     setLoading(false);
   }
 

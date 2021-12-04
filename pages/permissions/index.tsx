@@ -15,7 +15,7 @@ const columns: GridColDef[] = [
           variant="contained"
           color="primary"
           onClick={() => {
-            console.log(cellValues.row.id);
+            location.href = `/permissions/${cellValues.row.id}`;
           }}
         >
           Editar

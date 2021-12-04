@@ -1,10 +1,11 @@
 import { useState, SyntheticEvent } from 'react';
-import { Button, Box, Tabs, Tab, CircularProgress, Backdrop, Grid, TextField } from '@mui/material';
+import { Button, Box, Tabs, Tab, CircularProgress, Backdrop, Grid, TextField, Snackbar, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AdminLayout from "../../layout/AdminLayout";
 import axios from 'axios';
 import { API_URL, validateAuth } from '../../helpers/constants';
+import { useCookies } from 'react-cookie';
 
 
 interface TabPanelProps {
@@ -41,6 +42,13 @@ function a11yProps(index: number) {
 }
 
 export default function Vehicles({ data }) {
+  interface PropsSnackBar {
+    open: boolean,
+    type: "error" | "success" | "success" | "warning",
+    message: string
+  }
+
+  const [cookies] = useCookies(["admin_token"]);
   const [configs, setConfigs] = useState({
     correo_financiacion: data.configuraciones.correo_financiacion,
     correo_contacto: data.configuraciones.correo_contacto,
@@ -54,7 +62,51 @@ export default function Vehicles({ data }) {
   const [perPageModels, setPerPageModels] = useState(20);
   const [value, setValue] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [snackBar, setSnackBar] = useState<PropsSnackBar>({
+    open: false,
+    type: 'success',
+    message: ''
+  });
+
+  const handleClose = () => setSnackBar({
+    open: false,
+    type: 'success',
+    message: ''
+  });
+
   const handleChange = (event: SyntheticEvent, newValue: number) => setValue(newValue);
+
+  const updateConfigurations = async () => {
+    setLoading(true);
+    let error = false;
+    Object.entries(configs).map((item) => {
+      if (!item[1] && item[0] !== 'picture') {
+        error = true;
+        return;
+      }
+    });
+
+    if (error) {
+      setSnackBar({ open: true, type: 'error', message: 'Llena todos los campos obligatorios!' });
+      setLoading(false);
+      return;
+    }
+
+    const cookie = cookies.admin_token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${cookie}`,
+      },
+    };
+    const res = await axios.post(`${API_URL}/update-configs`, configs, config);
+    setSnackBar({
+      open: true,
+      type: res.data.status ? 'success' : 'error',
+      message: res.data.message
+    });
+
+    setLoading(false);
+  }
 
   const columnsGeneral: GridColDef[] = [
     {
@@ -108,6 +160,11 @@ export default function Vehicles({ data }) {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
+        <Snackbar open={snackBar.open} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity={snackBar.type} sx={{ width: '100%' }}>
+            {snackBar.message}
+          </Alert>
+        </Snackbar>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="General" {...a11yProps(0)} />
@@ -210,7 +267,7 @@ export default function Vehicles({ data }) {
                 noValidate
                 autoComplete="off"
               >
-                <LoadingButton loading={loading} fullWidth size="large" onClick={() => { }} variant="contained">Guardar</LoadingButton>
+                <LoadingButton loading={loading} fullWidth size="large" onClick={updateConfigurations} variant="contained">Guardar</LoadingButton>
               </Box>
             </Grid>
           </Grid>

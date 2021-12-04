@@ -15,7 +15,9 @@ export default function Services({ data }) {
 
   const [cookies] = useCookies(["admin_token"]);
   const [permissions, setPermissions] = useState(data.permissions);
-  const [rol, setRol] = useState(data.rol);
+  const [rol, setRol] = useState({
+    nombre: ''
+  });
   const [loading, setLoading] = useState(false);
   const [snackBar, setSnackBar] = useState<PropsSnackBar>({
     open: false,
@@ -35,7 +37,7 @@ export default function Services({ data }) {
     setPermissions([...newPermissions]);
   }
 
-  const updatePermissions = async () => {
+  const createPermissions = async () => {
     setLoading(true);
     if (rol.nombre === '') {
       setSnackBar({ open: true, type: 'error', message: 'Llena el nombre del rol!' });
@@ -54,7 +56,7 @@ export default function Services({ data }) {
         Authorization: `Bearer ${cookie}`
       }
     };
-    const res = await axios.post(`${API_URL}/update-permissions`, data, config);
+    const res = await axios.post(`${API_URL}/create-permissions`, data, config);
     setSnackBar({
       open: true,
       type: res.data.status ? 'success' : 'error',
@@ -68,7 +70,7 @@ export default function Services({ data }) {
       Roles
     </Link>, ,
     <Typography key="2" color="text.primary">
-      {rol.nombre}
+      Crear Rol
     </Typography>,
   ];
 
@@ -134,7 +136,7 @@ export default function Services({ data }) {
             noValidate
             autoComplete="off"
           >
-            <LoadingButton loading={loading} fullWidth size="large" onClick={updatePermissions} variant="contained">Guardar</LoadingButton>
+            <LoadingButton loading={loading} fullWidth size="large" onClick={createPermissions} variant="contained">Guardar</LoadingButton>
           </Box>
         </Grid>
       </>
@@ -158,7 +160,7 @@ export async function getServerSideProps(context) {
   const config = {
     headers: { Authorization: `Bearer ${cookie}` }
   };
-  const res = await axios.get(`${API_URL}/form-update-permissions/${context.query.id}`, config);
+  const res = await axios.get(`${API_URL}/form-create-permissions`, config);
   const data = await res.data;
   return {
     props: {

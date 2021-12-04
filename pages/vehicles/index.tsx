@@ -1,5 +1,5 @@
 import { useState, SyntheticEvent } from 'react';
-import { Button, Checkbox, Box, Tabs, Tab, CircularProgress, Backdrop } from '@mui/material';
+import { Button, Checkbox, Box, Tabs, Tab, CircularProgress, Backdrop, Snackbar, Alert } from '@mui/material';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import AdminLayout from "../../layout/AdminLayout";
 import axios from 'axios';
@@ -41,6 +41,11 @@ function a11yProps(index: number) {
 }
 
 export default function Vehicles({ data }) {
+  interface PropsSnackBar {
+    open: boolean,
+    type: "error" | "success" | "success" | "warning",
+    message: string
+  }
   const [cookies] = useCookies(["admin_token"]);
   const [rows, setRows] = useState(data.vehicles);
   const [perPage, setPerPage] = useState(20);
@@ -54,10 +59,21 @@ export default function Vehicles({ data }) {
   const [value, setValue] = useState(0);
 
   const [loading, setLoading] = useState(false);
+  const [snackBar, setSnackBar] = useState<PropsSnackBar>({
+    open: false,
+    type: 'success',
+    message: ''
+  });
 
   const handleChange = (event: SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const handleClose = () => setSnackBar({
+    open: false,
+    type: 'success',
+    message: ''
+  });
 
   const dependable = async (id) => {
     const cookie = cookies.admin_token;
@@ -68,6 +84,78 @@ export default function Vehicles({ data }) {
     };
     const res = await axios.put(`${API_URL}/dependable-vehicle`, { id }, config);
     return res.data.dependable;
+  }
+
+  const approve = async (id, approve) => {
+    if (window.confirm(`Estas seguro de ${approve ? 'aprobar' : 'rechazar'} este vehículo?`)) {
+      setLoading(true);
+      const cookie = cookies.admin_token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${cookie}`,
+        },
+      };
+      const res = await axios.post(`${API_URL}/approve-vehicle`, { id, approve }, config);
+      setSnackBar({
+        open: true,
+        type: res.data.status ? 'success' : 'error',
+        message: res.data.message
+      });
+      if (res.data.status) {
+        setRows(res.data.vehicles);
+        setRowsApprove(res.data.vehiclesApprove);
+        setRowsPromotional(res.data.vehiclesPromotional);
+      }
+      setLoading(false);
+    }
+  }
+
+  const approve_promotion = async (id, approve) => {
+    if (window.confirm(`Estas seguro de ${approve ? 'aprobar' : 'rechazar'} esta promoción?`)) {
+      setLoading(true);
+      const cookie = cookies.admin_token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${cookie}`,
+        },
+      };
+      const res = await axios.post(`${API_URL}/approve-promotion-vehicle`, { id, approve }, config);
+      setSnackBar({
+        open: true,
+        type: res.data.status ? 'success' : 'error',
+        message: res.data.message
+      });
+      if (res.data.status) {
+        setRows(res.data.vehicles);
+        setRowsApprove(res.data.vehiclesApprove);
+        setRowsPromotional(res.data.vehiclesPromotional);
+      }
+      setLoading(false);
+    }
+  }
+
+  const delete_vehicle = async (id) => {
+    if (window.confirm("Estas seguro de eliminar este vehículo?")) {
+      setLoading(true);
+      const cookie = cookies.admin_token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${cookie}`,
+        },
+      };
+      const res = await axios.post(`${API_URL}/remove-vehicle-admin`, { id }, config);
+      setSnackBar({
+        open: true,
+        type: res.data.status ? 'success' : 'error',
+        message: res.data.message
+      });
+      if (res.data.status) {
+        setRows(res.data.vehicles);
+        setRowsApprove(res.data.vehiclesApprove);
+        setRowsPromotional(res.data.vehiclesPromotional);
+      }
+      setLoading(false);
+    }
   }
 
   const columnsGeneral: GridColDef[] = [
@@ -141,9 +229,7 @@ export default function Vehicles({ data }) {
             <Button
               variant="contained"
               color="error"
-              onClick={() => {
-                console.log(cellValues.row.id);
-              }}
+              onClick={() => delete_vehicle(cellValues.row.id)}
             >
               Eliminar
             </Button>
@@ -175,18 +261,14 @@ export default function Vehicles({ data }) {
               variant="contained"
               color="info"
               style={{ marginRight: 10 }}
-              onClick={() => {
-                console.log(cellValues.row.id);
-              }}
+              onClick={() => approve(cellValues.row.id, true)}
             >
               Aprobar
             </Button>
             <Button
               variant="contained"
               color="error"
-              onClick={() => {
-                console.log(cellValues.row.id);
-              }}
+              onClick={() => approve(cellValues.row.id, false)}
             >
               Rechazar
             </Button>
@@ -218,18 +300,14 @@ export default function Vehicles({ data }) {
               variant="contained"
               color="info"
               style={{ marginRight: 10 }}
-              onClick={() => {
-                console.log(cellValues.row.id);
-              }}
+              onClick={() => approve_promotion(cellValues.row.id, true)}
             >
               Aprobar
             </Button>
             <Button
               variant="contained"
               color="error"
-              onClick={() => {
-                console.log(cellValues.row.id);
-              }}
+              onClick={() => approve_promotion(cellValues.row.id, false)}
             >
               Rechazar
             </Button>
@@ -249,6 +327,11 @@ export default function Vehicles({ data }) {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
+        <Snackbar open={snackBar.open} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity={snackBar.type} sx={{ width: '100%' }}>
+            {snackBar.message}
+          </Alert>
+        </Snackbar>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
             <Tab label="Vehículos" {...a11yProps(0)} />

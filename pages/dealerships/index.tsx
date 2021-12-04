@@ -44,7 +44,8 @@ export default function Dealerships({ data }) {
       type: res.data.status ? 'success' : 'error',
       message: res.data.message
     });
-    setRows(res.data.dealerships)
+    setRows(res.data.dealerships);
+    setOpenAlert(false);
     setLoading(false);
   }
 

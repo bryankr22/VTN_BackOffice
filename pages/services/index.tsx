@@ -44,7 +44,8 @@ export default function Services({ data }) {
       type: res.data.status ? 'success' : 'error',
       message: res.data.message
     });
-    setRows(res.data.services)
+    setRows(res.data.services);
+    setOpenAlert(false);
     setLoading(false);
   }
 

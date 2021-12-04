@@ -25,13 +25,7 @@ export default function CreatePromotion({ data }) {
     message: string
   }
   const [cookies] = useCookies(["admin_token"]);
-  const [promotion, setPromotion] = useState({
-    picture1: '',
-    picture2: '',
-    title: '',
-    nameButton: '',
-    link: ''
-  });
+  const [promotion, setPromotion] = useState(data.promotion);
   const [loading, setLoading] = useState(false);
   const [snackBar, setSnackBar] = useState<PropsSnackBar>({
     open: false,
@@ -48,8 +42,8 @@ export default function CreatePromotion({ data }) {
   const onChangeFile = (picture, e) => {
     if (e.target.files[0]) {
       let objectUrl = URL.createObjectURL(e.target.files[0]);
-      const width = picture === 'picture1' ? 1200 : 800;
-      const height = picture === 'picture1' ? 300 : 400;
+      const width = picture === 'image' ? 1200 : 800;
+      const height = picture === 'image' ? 300 : 400;
 
       let file, img;
       file = e.target.files[0];
@@ -60,8 +54,8 @@ export default function CreatePromotion({ data }) {
         img.onload = function () {
           if (this.width !== width || this.height !== height) {
             console.log(this.width,this.height)
-            setSnackBar({ open: true, type: 'error', message: picture === 'picture1' ? 'La imagen desktop debe de ser de 1200x300px' : 'La imagen mobile debe de ser de 800x400px' });
-            const file1: any = document.getElementById(picture === 'picture1' ? 'file1' : 'file2');
+            setSnackBar({ open: true, type: 'error', message: picture === 'image' ? 'La imagen desktop debe de ser de 1200x300px' : 'La imagen mobile debe de ser de 800x400px' });
+            const file1: any = document.getElementById(picture === 'image' ? 'file1' : 'file2');
             file1.value = null;
           } else {
             setPromotion({ ...promotion, [picture]: objectUrl });
@@ -73,15 +67,15 @@ export default function CreatePromotion({ data }) {
     }
   }
 
-  const createPromotion = async () => {
+  const updatePromotion = async () => {
     setLoading(true);
-    if (promotion.picture1 === '') {
+    if (promotion.image === '') {
       setSnackBar({ open: true, type: 'error', message: 'Carga la imagen Desktop!' });
       setLoading(false);
       return;
     }
 
-    if (promotion.picture2 === '') {
+    if (promotion.image_mobile === '') {
       setSnackBar({ open: true, type: 'error', message: 'Carga la imagen Mobile!' });
       setLoading(false);
       return;
@@ -89,7 +83,7 @@ export default function CreatePromotion({ data }) {
 
     let error = false;
     Object.entries(promotion).map((item) => {
-      if (!item[1] && item[0] !== 'picture1' && item[0] !== 'picture2') {
+      if (!item[1] && item[0] !== 'image' && item[0] !== 'image_mobile') {
         error = true;
         return;
       }
@@ -105,7 +99,7 @@ export default function CreatePromotion({ data }) {
     const file1: any = document.getElementById('file1');
     const file2: any = document.getElementById('file2');
     Object.entries(promotion).map((item) => {
-      if (item[0] !== 'picture1' && item[0] !== 'picture2') {
+      if (item[0] !== 'image' && item[0] !== 'image_mobile') {
         formData.append(item[0], item[1]);
       }
     });
@@ -119,20 +113,13 @@ export default function CreatePromotion({ data }) {
         Authorization: `Bearer ${cookie}`
       }
     };
-    const res = await axios.post(`${API_URL}/create-promotion`, formData, config);
+    const res = await axios.post(`${API_URL}/update-promotion`, formData, config);
     setSnackBar({
       open: true,
       type: res.data.status ? 'success' : 'error',
       message: res.data.message
     });
     if (res.data.status) {
-      setPromotion({
-        picture1: '',
-        picture2: '',
-        title: '',
-        nameButton: '',
-        link: ''
-      });
       file1.value = null;
       file2.value = null;
     }
@@ -144,7 +131,7 @@ export default function CreatePromotion({ data }) {
       Pautas
     </Link>, ,
     <Typography key="2" color="text.primary">
-      Crear Pauta
+      {promotion.name}
     </Typography>,
   ];
 
@@ -214,9 +201,9 @@ export default function CreatePromotion({ data }) {
               autoComplete="off"
             >
               <div className="dropzone">
-                {promotion.picture1 === '' && <div>Imagen Desktop 1200x300px</div>}
-                <input type="file" name="file1" id="file1" accept="image/*" onChange={(e) => onChangeFile('picture1', e)} />
-                {promotion.picture1 !== '' && <div><img src={promotion.picture1} onClick={() => document.getElementById('file1').click()} /></div>}
+                {promotion.image === '' && <div>Imagen Desktop 1200x300px</div>}
+                <input type="file" name="file1" id="file1" accept="image/*" onChange={(e) => onChangeFile('image', e)} />
+                {promotion.image !== '' && <div><img src={promotion.image} onClick={() => document.getElementById('file1').click()} /></div>}
               </div>
 
               <TextField
@@ -224,9 +211,9 @@ export default function CreatePromotion({ data }) {
                 label="Título"
                 variant="outlined"
                 required
-                error={(promotion.title === '') ? true : false}
-                value={promotion.title}
-                onChange={(event) => setPromotion({ ...promotion, title: event.target.value })}
+                error={(promotion.name === '') ? true : false}
+                value={promotion.name}
+                onChange={(event) => setPromotion({ ...promotion, name: event.target.value })}
               />
 
             </Box>
@@ -242,19 +229,19 @@ export default function CreatePromotion({ data }) {
             >
 
               <div className="dropzone">
-                {promotion.picture2 === '' && <div>Imagen Mobile 800x400px</div>}
-                <input type="file" name="file2" id="file2" accept="image/*" onChange={(e) => onChangeFile('picture2', e)} />
-                {promotion.picture2 !== '' && <div><img src={promotion.picture2} onClick={() => document.getElementById('file2').click()} /></div>}
+                {promotion.image_mobile === '' && <div>Imagen Mobile 800x400px</div>}
+                <input type="file" name="file2" id="file2" accept="image/*" onChange={(e) => onChangeFile('image_mobile', e)} />
+                {promotion.image_mobile !== '' && <div><img src={promotion.image_mobile} onClick={() => document.getElementById('file2').click()} /></div>}
               </div>
 
               <TextField
                 id="name_button"
                 label="Nombre botón"
                 required
-                error={(promotion.nameButton === '') ? true : false}
+                error={(promotion.button_name === '') ? true : false}
                 variant="outlined"
-                value={promotion.nameButton}
-                onChange={(event) => setPromotion({ ...promotion, nameButton: event.target.value })}
+                value={promotion.button_name}
+                onChange={(event) => setPromotion({ ...promotion, button_name: event.target.value })}
               />
             </Box>
           </Grid>
@@ -287,7 +274,7 @@ export default function CreatePromotion({ data }) {
               noValidate
               autoComplete="off"
             >
-              <LoadingButton loading={loading} fullWidth size="large" onClick={createPromotion} variant="contained">Guardar</LoadingButton>
+              <LoadingButton loading={loading} fullWidth size="large" onClick={updatePromotion} variant="contained">Guardar</LoadingButton>
             </Box>
           </Grid>
         </Grid>
@@ -312,7 +299,7 @@ export async function getServerSideProps(context) {
   const config = {
     headers: { Authorization: `Bearer ${cookie}` }
   };
-  const res = await axios.get(`${API_URL}/configs`, config);
+  const res = await axios.get(`${API_URL}/form-update-promotion/${context.query.id}`, config);
   const data = await res.data;
   return {
     props: {
