@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -7,7 +7,7 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+import {Typography, Snackbar, Alert, Backdrop, CircularProgress} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
@@ -40,17 +40,29 @@ const theme = createTheme({
 });
 
 export default function Login() {
+  interface PropsSnackBar {
+    open: boolean,
+    type: "error" | "success" | "success" | "warning",
+    message: string
+  }
+
   const [cookie, setCookie] = useCookies(["admin_token"]);
   const [cookies] = useCookies(["admin_token"]);
+  const [loading, setLoading] = useState(false);
+  const [snackBar, setSnackBar] = useState<PropsSnackBar>({
+    open: false,
+    type: 'success',
+    message: ''
+  });
 
   useEffect(() => {
     if (cookies.admin_token) location.href = '/users';
   }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
     const dataForm = {
       email: data.get('email'),
       password: data.get('password'),
@@ -65,11 +77,30 @@ export default function Login() {
       });
       location.href = '/users';
     }).catch(error => {
+      setSnackBar({ open: true, type: 'error', message: 'Usuario o contraseña incorrecta!' });
+      setLoading(false);
     });
   };
 
+  const handleClose = () => setSnackBar({
+    open: false,
+    type: 'success',
+    message: ''
+  });
+
   return (
     <ThemeProvider theme={theme}>
+      <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      <Snackbar open={snackBar.open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={snackBar.type} sx={{ width: '100%' }}>
+          {snackBar.message}
+        </Alert>
+      </Snackbar>
       {!cookies.admin_token &&
         <Grid container component="main" sx={{ height: '100vh' }}>
           <CssBaseline />
