@@ -382,7 +382,19 @@ export default function Vehicles({ data }) {
           </div>
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <div style={{ height: 500, width: '100%', marginTop: 20 }}>
+        <Button
+            variant="contained"
+            color="info"
+            style={{
+              position: 'absolute',
+              right: 0,
+              marginRight: 30
+            }}
+            onClick={() => location.href = `/models/create`}
+          >
+            Crear Modelo
+          </Button>
+          <div style={{ height: 500, width: '100%', marginTop: 50 }}>
             <DataGrid
               rows={rowsModels}
               columns={columnsGeneralModels}
