@@ -108,6 +108,52 @@ export default function Vehicles({ data }) {
     setLoading(false);
   }
 
+  const delete_mark = async (id) => {
+    if (window.confirm("También se eliminaran los modelos asociados a la marca. ¿Estas seguro de eliminar esta marca?")) {
+      setLoading(true);
+      const cookie = cookies.admin_token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${cookie}`,
+        },
+      };
+      const res = await axios.post(`${API_URL}/delete-mark`, { id }, config);
+      setSnackBar({
+        open: true,
+        type: res.data.status ? 'success' : 'error',
+        message: res.data.message
+      });
+      if (res.data.status) {
+        setRows(res.data.marcas);
+        setRowsModels(res.data.modelos);
+      }
+      setLoading(false);
+    }
+  }
+
+  const delete_model = async (id) => {
+    if (window.confirm("¿Estas seguro de eliminar esta modelo?")) {
+      setLoading(true);
+      const cookie = cookies.admin_token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${cookie}`,
+        },
+      };
+      const res = await axios.post(`${API_URL}/delete-model`, { id }, config);
+      setSnackBar({
+        open: true,
+        type: res.data.status ? 'success' : 'error',
+        message: res.data.message
+      });
+      if (res.data.status) {
+        setRows(res.data.marcas);
+        setRowsModels(res.data.modelos);
+      }
+      setLoading(false);
+    }
+  }
+
   const columnsGeneral: GridColDef[] = [
     {
       field: 'nombre',
@@ -130,7 +176,7 @@ export default function Vehicles({ data }) {
               color="primary"
               style={{ marginRight: 10 }}
               onClick={() => {
-                location.href = `/vehicles/${cellValues.row.id}`;
+                location.href = `/marks/${cellValues.row.id}`;
               }}
             >
               Editar
@@ -138,9 +184,48 @@ export default function Vehicles({ data }) {
             <Button
               variant="contained"
               color="error"
+              onClick={() => delete_mark(cellValues.row.id)}
+            >
+              Eliminar
+            </Button>
+          </>
+        );
+      },
+      width: 250,
+    }
+  ];
+
+  const columnsGeneralModels: GridColDef[] = [
+    {
+      field: 'nombre',
+      headerName: 'Nombre',
+      width: 250,
+    },
+    {
+      field: 'nombrePadre',
+      headerName: 'Categoría',
+      width: 300,
+
+    },
+    {
+      field: "Acciones",
+      renderCell: (cellValues) => {
+        return (
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ marginRight: 10 }}
               onClick={() => {
-                console.log(cellValues.row.id);
+                location.href = `/models/${cellValues.row.id}`;
               }}
+            >
+              Editar
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => delete_model(cellValues.row.id)}
             >
               Eliminar
             </Button>
@@ -273,7 +358,19 @@ export default function Vehicles({ data }) {
           </Grid>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <div style={{ height: 500, width: '100%', marginTop: 20 }}>
+          <Button
+            variant="contained"
+            color="info"
+            style={{
+              position: 'absolute',
+              right: 0,
+              marginRight: 30
+            }}
+            onClick={() => location.href = `/marks/create`}
+          >
+            Crear Marca
+          </Button>
+          <div style={{ height: 500, width: '100%', marginTop: 50 }}>
             <DataGrid
               rows={rows}
               columns={columnsGeneral}
@@ -288,7 +385,7 @@ export default function Vehicles({ data }) {
           <div style={{ height: 500, width: '100%', marginTop: 20 }}>
             <DataGrid
               rows={rowsModels}
-              columns={columnsGeneral}
+              columns={columnsGeneralModels}
               pageSize={perPageModels}
               rowsPerPageOptions={[20, 50, 100]}
               onPageSizeChange={(pageSize: number) => setPerPageModels(pageSize)}

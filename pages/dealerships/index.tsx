@@ -32,6 +32,7 @@ export default function Dealerships({ data }) {
   });
   const deleteDealerships = async (id) => {
     setLoading(true);
+    setOpenAlert(false);
     const cookie = cookies.admin_token;
     const config = {
       headers: {
@@ -45,7 +46,6 @@ export default function Dealerships({ data }) {
       message: res.data.message
     });
     setRows(res.data.dealerships);
-    setOpenAlert(false);
     setLoading(false);
   }
 

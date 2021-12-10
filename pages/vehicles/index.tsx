@@ -333,9 +333,9 @@ export default function Vehicles({ data }) {
           </Alert>
         </Snackbar>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" variant="scrollable" scrollButtons="auto" variant="fullWidth">
             <Tab label="Vehículos" {...a11yProps(0)} />
-            <Tab label="Pendiente por aprobar" {...a11yProps(1)} />
+            <Tab label="Pendientes" {...a11yProps(1)} />
             <Tab label="Promociones" {...a11yProps(2)} />
           </Tabs>
         </Box>

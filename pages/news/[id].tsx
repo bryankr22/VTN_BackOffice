@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Box, TextField, MenuItem, Avatar, Snackbar, Alert, Link, Typography, Breadcrumbs, Stack, Grid } from '@mui/material';
+import { Box, TextField, Snackbar, Alert, Link, Typography, Breadcrumbs, Stack, Grid } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import AdminLayout from "../../layout/AdminLayout";
 import axios from 'axios';
-import { API_URL } from '../../helpers/constants';
+import { API_URL, S3_URL, validateAuth } from '../../helpers/constants';
 import { useCookies } from 'react-cookie';
 
 
@@ -13,13 +13,8 @@ export default function CreateNews({ data }) {
     type: "error" | "success" | "success" | "warning",
     message: string
   }
-
   const [cookies] = useCookies(["admin_token"]);
-  const [news, setNews] = useState({
-    title: '',
-    description: '',
-    link: ''
-  });
+  const [news, setNews] = useState(data.news);
   const [loading, setLoading] = useState(false);
   const [snackBar, setSnackBar] = useState<PropsSnackBar>({
     open: false,
@@ -49,19 +44,12 @@ export default function CreateNews({ data }) {
         Authorization: `Bearer ${cookie}`,
       },
     };
-    const res = await axios.post(`${API_URL}/create-news`, news, config);
+    const res = await axios.put(`${API_URL}/update-news`, news, config);
     setSnackBar({
       open: true,
       type: res.data.status ? 'success' : 'error',
       message: res.data.message
     });
-    if (res.data.status) {
-      setNews({
-        title: '',
-        description: '',
-        link: ''
-      });
-    }
     setLoading(false);
   }
 
@@ -70,7 +58,7 @@ export default function CreateNews({ data }) {
       Noticias
     </Link>, ,
     <Typography key="2" color="text.primary">
-      Crear Noticia
+      {news.title}
     </Typography>,
   ];
 
@@ -159,4 +147,30 @@ export default function CreateNews({ data }) {
       </>
     </AdminLayout>
   );
+}
+
+export async function getServerSideProps(context) {
+  const auth = validateAuth(context);
+
+  if (!auth.admin_token) {
+    context.res.writeHead(301, {
+      Location: '/401'
+    });
+    context.res.end();
+    return {
+      props: {}
+    }
+  }
+  const cookie = auth.admin_token;
+  const config = {
+    headers: { Authorization: `Bearer ${cookie}` }
+  };
+
+  const res = await axios.get(`${API_URL}/form-new/${context.query.id}`, config);
+  const data = await res.data;
+  return {
+    props: {
+      data
+    },
+  }
 }

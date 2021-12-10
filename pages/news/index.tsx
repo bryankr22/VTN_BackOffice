@@ -1,55 +1,120 @@
-import { useState } from 'react';
-import { Typography, Button, Checkbox } from '@mui/material';
+import React, { useState } from 'react';
+import { Typography, Button, DialogContentText, DialogActions, DialogContent, Dialog, DialogTitle, Backdrop, CircularProgress } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AdminLayout from "../../layout/AdminLayout";
 import axios from 'axios';
 import { API_URL, validateAuth } from '../../helpers/constants';
-
-const columns: GridColDef[] = [
-  { field: 'title', headerName: 'Noticia', width: 400 },
-  {
-    field: 'description',
-    headerName: 'Descripción',
-    width: 400,
-  },
-  {
-    field: "Acciones",
-    renderCell: (cellValues) => {
-      return (
-        <>
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ marginRight: 10 }}
-            onClick={() => {
-              console.log(cellValues.row.id);
-            }}
-          >
-            Editar
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              console.log(cellValues.row.id);
-            }}
-          >
-            Eliminar
-          </Button>
-        </>
-      );
-    },
-    width: 200
-  }
-];
+import { useCookies } from 'react-cookie';
 
 export default function News({ data }) {
+  interface PropsSnackBar {
+    open: boolean,
+    type: "error" | "success" | "success" | "warning",
+    message: string
+  }
+
+  const [cookies] = useCookies(["admin_token"]);
   const [rows, setRows] = useState(data.news);
+  const [rowId, setRowId] = useState();
   const [perPage, setPerPage] = useState(20);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [snackBar, setSnackBar] = useState<PropsSnackBar>({
+    open: false,
+    type: 'success',
+    message: ''
+  });
+
+  const deleteNews = async (id) => {
+    setLoading(true);
+    setOpenAlert(false);
+    const cookie = cookies.admin_token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${cookie}`,
+      },
+    };
+    const res = await axios.post(`${API_URL}/delete-news`, { id }, config);
+    setSnackBar({
+      open: true,
+      type: res.data.status ? 'success' : 'error',
+      message: res.data.message
+    });
+    if (res.data.status) {
+      setRows(res.data.news);
+    }
+    setLoading(false);
+  }
+
+  const columns: GridColDef[] = [
+    { field: 'title', headerName: 'Noticia', width: 400 },
+    {
+      field: 'description',
+      headerName: 'Descripción',
+      width: 400,
+    },
+    {
+      field: "Acciones",
+      renderCell: (cellValues) => {
+        return (
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ marginRight: 10 }}
+              onClick={() => {
+                location.href = `/news/${cellValues.row.id}`;
+              }}
+            >
+              Editar
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                setRowId(cellValues.row.id);
+                setOpenAlert(true);
+              }}
+            >
+              Eliminar
+            </Button>
+          </>
+        );
+      },
+      width: 200
+    }
+  ];
 
   return (
     <AdminLayout>
       <>
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        <Dialog
+          open={openAlert}
+          onClose={() => setOpenAlert(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            ATENCIÓN
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              ¿Esta seguro de eliminar este registro?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenAlert(false)}>Cancelar</Button>
+            <Button onClick={() => deleteNews(rowId)} autoFocus>
+              Aceptar
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Typography>
           Noticias
           {data.news.length < 3 &&
