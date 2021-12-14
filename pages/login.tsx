@@ -56,7 +56,7 @@ export default function Login() {
   });
 
   useEffect(() => {
-    if (cookies.admin_token) location.href = '/users';
+    if (cookies.admin_token) location.href = '/dashboard';
   }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -75,7 +75,7 @@ export default function Login() {
         expires: null,
         sameSite: true
       });
-      location.href = '/users';
+      location.href = '/dashboard';
     }).catch(error => {
       setSnackBar({ open: true, type: 'error', message: 'Usuario o contraseña incorrecta!' });
       setLoading(false);
