@@ -25,7 +25,7 @@ const columns: GridColDef[] = [
           variant="contained"
           color="primary"
           onClick={() => {
-            console.log(cellValues.row.id);
+            location.href = `/community/${cellValues.row.id}`;
           }}
         >
           Editar

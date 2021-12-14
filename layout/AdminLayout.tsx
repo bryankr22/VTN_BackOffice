@@ -10,7 +10,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { People, ViewCarousel, DirectionsCar, Info, CarRental, Forum, Announcement, HomeRepairService, AddToHomeScreen, Settings, ManageAccounts, Logout } from '@mui/icons-material';
+import { People, ViewCarousel, DirectionsCar, Info, CarRental, Forum, Announcement, HomeRepairService, AddToHomeScreen, Settings, ManageAccounts, Logout, ContactPage } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -130,6 +130,12 @@ export default function AdminLayout(props: Props) {
       />
 
       <List>
+        <ListItem button onClick={() => location.href = `/dashboard`} key="dashboard">
+          <ListItemIcon>
+            <ContactPage />
+          </ListItemIcon>
+          <ListItemText primary="Dashboard" />
+        </ListItem>
         {items.map((item, index) => {
           return menu.length > 0 && menu.map((menuItem) => {
             return menuItem.slug === item.slug &&

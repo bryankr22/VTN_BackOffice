@@ -1,11 +1,11 @@
 import { useState, SyntheticEvent } from 'react';
-import { Button, Checkbox, Box, Tabs, Tab, CircularProgress, Backdrop, Snackbar, Alert } from '@mui/material';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { Button, Checkbox, Box, Tabs, Tab, CircularProgress, Backdrop, Snackbar, Alert, Typography } from '@mui/material';
+import { DataGrid, GridColDef, GridValueGetterParams, GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
 import AdminLayout from "../../layout/AdminLayout";
 import axios from 'axios';
 import { API_URL, S3_URL, validateAuth } from '../../helpers/constants';
 import { useCookies } from 'react-cookie';
-
+import { isMobile } from 'react-device-detect';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,6 +38,14 @@ function a11yProps(index: number) {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
   };
+}
+
+function CustomToolbar() {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarFilterButton />
+    </GridToolbarContainer>
+  );
 }
 
 export default function Vehicles({ data }) {
@@ -318,6 +326,188 @@ export default function Vehicles({ data }) {
     }
   ];
 
+  const columnGeneralMobile: GridColDef[] = [
+    {
+      field: 'title',
+      headerName: 'Nombre',
+      hide: true,
+    },
+    {
+      field: 'ano',
+      headerName: 'Año',
+      hide: true
+    },
+    {
+      field: 'kilometraje',
+      headerName: 'Kilometraje',
+      hide: true
+    }
+  ];
+
+  const columnMobile: GridColDef[] = [
+    ...columnGeneralMobile,
+    {
+      field: 'Vehiculo',
+      renderCell: (cellValues) => {
+        return (
+          <div>
+            <Typography>
+              <img
+                src={`${S3_URL}/vehiculos/${cellValues.row.nameImage}.webp?w=164&h=164&fit=crop&auto=format`}
+                srcSet={`${S3_URL}/vehiculos/${cellValues.row.nameImage}.webp?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                alt={cellValues.row.title}
+                width={150}
+                height={120}
+                loading="lazy"
+              />
+            </Typography>
+            <Typography>{cellValues.row.title}</Typography>
+            <Typography color="textSecondary">{cellValues.row.ano}</Typography>
+            <Typography color="textSecondary">{new Intl.NumberFormat("de-DE").format(cellValues.row.kilometraje)} KM</Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                style={{ marginRight: 10 }}
+                onClick={() => {
+                  location.href = `/vehicles/${cellValues.row.id}`;
+                }}
+              >
+                Editar
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => delete_vehicle(cellValues.row.id)}
+              >
+                Eliminar
+              </Button>
+            </Typography>
+
+          </div>
+        );
+      },
+      width: 320,
+      filterable: false
+    }
+  ];
+
+  const columnMobilePendiente: GridColDef[] = [
+    ...columnGeneralMobile,
+    {
+      field: 'Vehiculo',
+      renderCell: (cellValues) => {
+        return (
+          <div>
+            <Typography>
+              <img
+                src={`${S3_URL}/vehiculos/${cellValues.row.nameImage}.webp?w=164&h=164&fit=crop&auto=format`}
+                srcSet={`${S3_URL}/vehiculos/${cellValues.row.nameImage}.webp?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                alt={cellValues.row.title}
+                width={150}
+                height={120}
+                loading="lazy"
+              />
+            </Typography>
+            <Typography>{cellValues.row.title}</Typography>
+            <Typography color="textSecondary">{cellValues.row.ano}</Typography>
+            <Typography color="textSecondary">{new Intl.NumberFormat("de-DE").format(cellValues.row.kilometraje)} KM</Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                style={{ marginRight: 10 }}
+                onClick={() => {
+                  location.href = `/vehicles/${cellValues.row.id}`;
+                }}
+              >
+                Editar
+              </Button>
+              <Button
+                variant="contained"
+                color="info"
+                style={{ marginRight: 10 }}
+                onClick={() => approve(cellValues.row.id, true)}
+              >
+                Aprobar
+              </Button>
+            </Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => approve(cellValues.row.id, false)}
+              >
+                Rechazar
+              </Button>
+            </Typography>
+
+          </div >
+        );
+      },
+      width: 320,
+      filterable: false
+    }
+  ];
+
+  const columnMobilePromotional: GridColDef[] = [
+    ...columnGeneralMobile,
+    {
+      field: 'Vehiculo',
+      renderCell: (cellValues) => {
+        return (
+          <div>
+            <Typography>
+              <img
+                src={`${S3_URL}/vehiculos/${cellValues.row.nameImage}.webp?w=164&h=164&fit=crop&auto=format`}
+                srcSet={`${S3_URL}/vehiculos/${cellValues.row.nameImage}.webp?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                alt={cellValues.row.title}
+                width={150}
+                height={120}
+                loading="lazy"
+              />
+            </Typography>
+            <Typography>{cellValues.row.title}</Typography>
+            <Typography color="textSecondary">{cellValues.row.ano}</Typography>
+            <Typography color="textSecondary">{new Intl.NumberFormat("de-DE").format(cellValues.row.kilometraje)} KM</Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                style={{ marginRight: 10 }}
+                onClick={() => {
+                  location.href = `/vehicles/${cellValues.row.id}`;
+                }}
+              >
+                Editar
+              </Button>
+              <Button
+                variant="contained"
+                color="info"
+                style={{ marginRight: 10 }}
+                onClick={() => approve_promotion(cellValues.row.id, true)}
+              >
+                Aprobar
+              </Button>
+            </Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => approve_promotion(cellValues.row.id, false)}
+              >
+                Rechazar
+              </Button>
+            </Typography>
+
+          </div >
+        );
+      },
+      width: 320,
+      filterable: false
+    }
+  ];
+
   return (
     <AdminLayout>
       <>
@@ -333,7 +523,7 @@ export default function Vehicles({ data }) {
           </Alert>
         </Snackbar>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" variant="scrollable" scrollButtons="auto" variant="fullWidth">
+          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" variant="scrollable" scrollButtons="auto">
             <Tab label="Vehículos" {...a11yProps(0)} />
             <Tab label="Pendientes" {...a11yProps(1)} />
             <Tab label="Promociones" {...a11yProps(2)} />
@@ -341,41 +531,89 @@ export default function Vehicles({ data }) {
         </Box>
         <TabPanel value={value} index={0}>
           <div style={{ height: 500, width: '100%', marginTop: 20 }}>
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              pageSize={perPage}
-              rowHeight={200}
-              rowsPerPageOptions={[20, 50, 100]}
-              onPageSizeChange={(pageSize: number) => setPerPage(pageSize)}
-              disableSelectionOnClick
-            />
+            {!isMobile &&
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                pageSize={perPage}
+                rowHeight={200}
+                rowsPerPageOptions={[20, 50, 100]}
+                onPageSizeChange={(pageSize: number) => setPerPage(pageSize)}
+                disableSelectionOnClick
+              />
+            }
+            {isMobile &&
+              <DataGrid
+                rows={rows}
+                columns={columnMobile}
+                pageSize={perPage}
+                rowHeight={280}
+                rowsPerPageOptions={[20, 50, 100]}
+                onPageSizeChange={(pageSize: number) => setPerPage(pageSize)}
+                disableSelectionOnClick
+                components={{
+                  Toolbar: CustomToolbar,
+                }}
+              />
+            }
           </div>
         </TabPanel>
         <TabPanel value={value} index={1}>
           <div style={{ height: 500, width: '100%', marginTop: 20 }}>
-            <DataGrid
-              rows={rowsApprove}
-              columns={columnsApprove}
-              pageSize={perPageApprove}
-              rowHeight={200}
-              rowsPerPageOptions={[20, 50, 100]}
-              onPageSizeChange={(pageSize: number) => setPerPageApprove(pageSize)}
-              disableSelectionOnClick
-            />
+            {!isMobile &&
+              <DataGrid
+                rows={rowsApprove}
+                columns={columnsApprove}
+                pageSize={perPageApprove}
+                rowHeight={200}
+                rowsPerPageOptions={[20, 50, 100]}
+                onPageSizeChange={(pageSize: number) => setPerPageApprove(pageSize)}
+                disableSelectionOnClick
+              />
+            }
+            {isMobile &&
+              <DataGrid
+                rows={rowsApprove}
+                columns={columnMobilePendiente}
+                pageSize={perPageApprove}
+                rowHeight={320}
+                rowsPerPageOptions={[20, 50, 100]}
+                onPageSizeChange={(pageSize: number) => setPerPageApprove(pageSize)}
+                disableSelectionOnClick
+                components={{
+                  Toolbar: CustomToolbar,
+                }}
+              />
+            }
           </div>
         </TabPanel>
         <TabPanel value={value} index={2}>
           <div style={{ height: 500, width: '100%', marginTop: 20 }}>
-            <DataGrid
-              rows={rowsPromotional}
-              columns={columnsPromotional}
-              pageSize={perPagePromotional}
-              rowHeight={200}
-              rowsPerPageOptions={[20, 50, 100]}
-              onPageSizeChange={(pageSize: number) => setPerPagePromotional(pageSize)}
-              disableSelectionOnClick
-            />
+            {!isMobile &&
+              <DataGrid
+                rows={rowsPromotional}
+                columns={columnsPromotional}
+                pageSize={perPagePromotional}
+                rowHeight={200}
+                rowsPerPageOptions={[20, 50, 100]}
+                onPageSizeChange={(pageSize: number) => setPerPagePromotional(pageSize)}
+                disableSelectionOnClick
+              />
+            }
+            {isMobile &&
+              <DataGrid
+                rows={rowsPromotional}
+                columns={columnMobilePromotional}
+                pageSize={perPagePromotional}
+                rowHeight={320}
+                rowsPerPageOptions={[20, 50, 100]}
+                onPageSizeChange={(pageSize: number) => setPerPagePromotional(pageSize)}
+                disableSelectionOnClick
+                components={{
+                  Toolbar: CustomToolbar,
+                }}
+              />
+            }
           </div>
         </TabPanel>
 
