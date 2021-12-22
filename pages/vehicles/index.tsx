@@ -189,6 +189,16 @@ export default function Vehicles({ data }) {
       width: 250,
     },
     {
+      field: 'nombreMarca',
+      headerName: 'Marca',
+      width: 100,
+    },
+    {
+      field: 'nombreModelo',
+      headerName: 'Modelo',
+      width: 100,
+    },
+    {
       field: 'precio',
       headerName: 'Precio',
       width: 150,
@@ -223,28 +233,34 @@ export default function Vehicles({ data }) {
       field: "Acciones",
       renderCell: (cellValues) => {
         return (
-          <>
-            <Button
-              variant="contained"
-              color="primary"
-              style={{ marginRight: 10 }}
-              onClick={() => {
-                location.href = `/vehicles/${cellValues.row.id}`;
-              }}
-            >
-              Editar
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => delete_vehicle(cellValues.row.id)}
-            >
-              Eliminar
-            </Button>
-          </>
+          <div>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                style={{ marginRight: 10 }}
+                onClick={() => {
+                  location.href = `/vehicles/${cellValues.row.id}`;
+                }}
+              >
+                Editar
+              </Button>
+            </Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="error"
+                onClick={() => delete_vehicle(cellValues.row.id)}
+              >
+                Eliminar
+              </Button>
+            </Typography>
+          </div>
         );
       },
-      width: 200,
+      width: 150,
     }
   ];
 
@@ -254,36 +270,45 @@ export default function Vehicles({ data }) {
       field: "Acciones",
       renderCell: (cellValues) => {
         return (
-          <>
-            <Button
-              variant="contained"
-              color="primary"
-              style={{ marginRight: 10 }}
-              onClick={() => {
-                location.href = `/vehicles/${cellValues.row.id}`;
-              }}
-            >
-              Editar
-            </Button>
-            <Button
-              variant="contained"
-              color="info"
-              style={{ marginRight: 10 }}
-              onClick={() => approve(cellValues.row.id, true)}
-            >
-              Aprobar
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => approve(cellValues.row.id, false)}
-            >
-              Rechazar
-            </Button>
-          </>
+          <div>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                style={{ marginRight: 10 }}
+                onClick={() => {
+                  location.href = `/vehicles/${cellValues.row.id}`;
+                }}
+              >
+                Editar
+              </Button>
+            </Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="info"
+                style={{ marginRight: 10 }}
+                onClick={() => approve(cellValues.row.id, true)}
+              >
+                Aprobar
+              </Button>
+            </Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="error"
+                onClick={() => approve(cellValues.row.id, false)}
+              >
+                Rechazar
+              </Button>
+            </Typography>
+          </div>
         );
       },
-      width: 300,
+      width: 150,
     }
   ];
 
@@ -293,36 +318,45 @@ export default function Vehicles({ data }) {
       field: "Acciones",
       renderCell: (cellValues) => {
         return (
-          <>
-            <Button
-              variant="contained"
-              color="primary"
-              style={{ marginRight: 10 }}
-              onClick={() => {
-                location.href = `/vehicles/${cellValues.row.id}`;
-              }}
-            >
-              Editar
-            </Button>
-            <Button
-              variant="contained"
-              color="info"
-              style={{ marginRight: 10 }}
-              onClick={() => approve_promotion(cellValues.row.id, true)}
-            >
-              Aprobar
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => approve_promotion(cellValues.row.id, false)}
-            >
-              Rechazar
-            </Button>
-          </>
+          <div>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                style={{ marginRight: 10 }}
+                onClick={() => {
+                  location.href = `/vehicles/${cellValues.row.id}`;
+                }}
+              >
+                Editar
+              </Button>
+            </Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="info"
+                style={{ marginRight: 10 }}
+                onClick={() => approve_promotion(cellValues.row.id, true)}
+              >
+                Aprobar
+              </Button>
+            </Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="error"
+                onClick={() => approve_promotion(cellValues.row.id, false)}
+              >
+                Rechazar
+              </Button>
+            </Typography>
+          </div>
         );
       },
-      width: 300,
+      width: 150,
     }
   ];
 
@@ -340,6 +374,21 @@ export default function Vehicles({ data }) {
     {
       field: 'kilometraje',
       headerName: 'Kilometraje',
+      hide: true
+    },
+    {
+      field: 'precio',
+      headerName: 'Precio',
+      hide: true
+    },
+    {
+      field: 'nombreMarca',
+      headerName: 'Marca',
+      hide: true
+    },
+    {
+      field: 'nombreModelo',
+      headerName: 'Modelo',
       hide: true
     }
   ];
@@ -362,7 +411,9 @@ export default function Vehicles({ data }) {
               />
             </Typography>
             <Typography>{cellValues.row.title}</Typography>
+            <Typography color="textSecondary">{cellValues.row.nombreMarca} - {cellValues.row.nombreModelo}</Typography>
             <Typography color="textSecondary">{cellValues.row.ano}</Typography>
+            <Typography color="textSecondary">$ {new Intl.NumberFormat("de-DE").format(cellValues.row.precio)}</Typography>
             <Typography color="textSecondary">{new Intl.NumberFormat("de-DE").format(cellValues.row.kilometraje)} KM</Typography>
             <Typography style={{ marginTop: 5 }}>
               <Button
@@ -410,7 +461,9 @@ export default function Vehicles({ data }) {
               />
             </Typography>
             <Typography>{cellValues.row.title}</Typography>
+            <Typography color="textSecondary">{cellValues.row.nombreMarca} - {cellValues.row.nombreModelo}</Typography>
             <Typography color="textSecondary">{cellValues.row.ano}</Typography>
+            <Typography color="textSecondary">$ {new Intl.NumberFormat("de-DE").format(cellValues.row.precio)}</Typography>
             <Typography color="textSecondary">{new Intl.NumberFormat("de-DE").format(cellValues.row.kilometraje)} KM</Typography>
             <Typography style={{ marginTop: 5 }}>
               <Button
@@ -468,7 +521,9 @@ export default function Vehicles({ data }) {
               />
             </Typography>
             <Typography>{cellValues.row.title}</Typography>
+            <Typography color="textSecondary">{cellValues.row.nombreMarca} - {cellValues.row.nombreModelo}</Typography>
             <Typography color="textSecondary">{cellValues.row.ano}</Typography>
+            <Typography color="textSecondary">$ {new Intl.NumberFormat("de-DE").format(cellValues.row.precio)}</Typography>
             <Typography color="textSecondary">{new Intl.NumberFormat("de-DE").format(cellValues.row.kilometraje)} KM</Typography>
             <Typography style={{ marginTop: 5 }}>
               <Button
@@ -547,7 +602,7 @@ export default function Vehicles({ data }) {
                 rows={rows}
                 columns={columnMobile}
                 pageSize={perPage}
-                rowHeight={280}
+                rowHeight={310}
                 rowsPerPageOptions={[20, 50, 100]}
                 onPageSizeChange={(pageSize: number) => setPerPage(pageSize)}
                 disableSelectionOnClick
@@ -576,7 +631,7 @@ export default function Vehicles({ data }) {
                 rows={rowsApprove}
                 columns={columnMobilePendiente}
                 pageSize={perPageApprove}
-                rowHeight={320}
+                rowHeight={350}
                 rowsPerPageOptions={[20, 50, 100]}
                 onPageSizeChange={(pageSize: number) => setPerPageApprove(pageSize)}
                 disableSelectionOnClick
@@ -605,7 +660,7 @@ export default function Vehicles({ data }) {
                 rows={rowsPromotional}
                 columns={columnMobilePromotional}
                 pageSize={perPagePromotional}
-                rowHeight={320}
+                rowHeight={350}
                 rowsPerPageOptions={[20, 50, 100]}
                 onPageSizeChange={(pageSize: number) => setPerPagePromotional(pageSize)}
                 disableSelectionOnClick
