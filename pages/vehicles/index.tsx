@@ -172,8 +172,8 @@ export default function Vehicles({ data }) {
       renderCell: (cellValues) => {
         return (
           <img
-            src={`${S3_URL}/vehiculos/${cellValues.row.nameImage}.webp?w=164&h=164&fit=crop&auto=format`}
-            srcSet={`${S3_URL}/vehiculos/${cellValues.row.nameImage}.webp?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+            src={`${S3_URL}/vehiculos/${cellValues.row.nameImage}.webp`}
+            srcSet={`${S3_URL}/vehiculos/${cellValues.row.nameImage}.webp`}
             alt={cellValues.row.title}
             width={150}
             height={150}
