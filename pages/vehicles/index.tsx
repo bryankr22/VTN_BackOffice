@@ -1,5 +1,5 @@
-import { useState, SyntheticEvent } from 'react';
-import { Button, Checkbox, Box, Tabs, Tab, CircularProgress, Backdrop, Snackbar, Alert, Typography } from '@mui/material';
+import React, { useState, SyntheticEvent } from 'react';
+import { Button, Checkbox, Box, Tabs, Tab, CircularProgress, Backdrop, Snackbar, Alert, Typography, FormControlLabel } from '@mui/material';
 import { DataGrid, GridColDef, GridValueGetterParams, GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
 import AdminLayout from "../../layout/AdminLayout";
 import axios from 'axios';
@@ -411,6 +411,23 @@ export default function Vehicles({ data }) {
               />
             </Typography>
             <Typography>{cellValues.row.title}</Typography>
+            <Typography>
+              <FormControlLabel
+                control={<Checkbox
+                  checked={(cellValues.row.confiable) ? true : false}
+                  onChange={async () => {
+                    setLoading(true);
+                    const dependableVehicle = await dependable(cellValues.row.id);
+                    cellValues.row.confiable = dependableVehicle;
+                    document.getElementById("simple-tabpanel-0").click()
+                    setLoading(false);
+                  }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+                }
+                label="Confiable"
+              />
+            </Typography>
             <Typography color="textSecondary">{cellValues.row.nombreMarca} - {cellValues.row.nombreModelo}</Typography>
             <Typography color="textSecondary">{cellValues.row.ano}</Typography>
             <Typography color="textSecondary">$ {new Intl.NumberFormat("de-DE").format(cellValues.row.precio)}</Typography>
@@ -461,6 +478,23 @@ export default function Vehicles({ data }) {
               />
             </Typography>
             <Typography>{cellValues.row.title}</Typography>
+            <Typography>
+              <FormControlLabel
+                control={<Checkbox
+                  checked={(cellValues.row.confiable) ? true : false}
+                  onChange={async () => {
+                    setLoading(true);
+                    const dependableVehicle = await dependable(cellValues.row.id);
+                    cellValues.row.confiable = dependableVehicle;
+                    document.getElementById("simple-tabpanel-0").click()
+                    setLoading(false);
+                  }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+                }
+                label="Confiable"
+              />
+            </Typography>
             <Typography color="textSecondary">{cellValues.row.nombreMarca} - {cellValues.row.nombreModelo}</Typography>
             <Typography color="textSecondary">{cellValues.row.ano}</Typography>
             <Typography color="textSecondary">$ {new Intl.NumberFormat("de-DE").format(cellValues.row.precio)}</Typography>
@@ -521,6 +555,23 @@ export default function Vehicles({ data }) {
               />
             </Typography>
             <Typography>{cellValues.row.title}</Typography>
+            <Typography>
+              <FormControlLabel
+                control={<Checkbox
+                  checked={(cellValues.row.confiable) ? true : false}
+                  onChange={async () => {
+                    setLoading(true);
+                    const dependableVehicle = await dependable(cellValues.row.id);
+                    cellValues.row.confiable = dependableVehicle;
+                    document.getElementById("simple-tabpanel-0").click()
+                    setLoading(false);
+                  }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+                }
+                label="Confiable"
+              />
+            </Typography>
             <Typography color="textSecondary">{cellValues.row.nombreMarca} - {cellValues.row.nombreModelo}</Typography>
             <Typography color="textSecondary">{cellValues.row.ano}</Typography>
             <Typography color="textSecondary">$ {new Intl.NumberFormat("de-DE").format(cellValues.row.precio)}</Typography>
@@ -602,7 +653,7 @@ export default function Vehicles({ data }) {
                 rows={rows}
                 columns={columnMobile}
                 pageSize={perPage}
-                rowHeight={310}
+                rowHeight={350}
                 rowsPerPageOptions={[20, 50, 100]}
                 onPageSizeChange={(pageSize: number) => setPerPage(pageSize)}
                 disableSelectionOnClick
@@ -631,7 +682,7 @@ export default function Vehicles({ data }) {
                 rows={rowsApprove}
                 columns={columnMobilePendiente}
                 pageSize={perPageApprove}
-                rowHeight={350}
+                rowHeight={390}
                 rowsPerPageOptions={[20, 50, 100]}
                 onPageSizeChange={(pageSize: number) => setPerPageApprove(pageSize)}
                 disableSelectionOnClick
@@ -660,7 +711,7 @@ export default function Vehicles({ data }) {
                 rows={rowsPromotional}
                 columns={columnMobilePromotional}
                 pageSize={perPagePromotional}
-                rowHeight={350}
+                rowHeight={390}
                 rowsPerPageOptions={[20, 50, 100]}
                 onPageSizeChange={(pageSize: number) => setPerPagePromotional(pageSize)}
                 disableSelectionOnClick
