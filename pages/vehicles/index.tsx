@@ -166,6 +166,35 @@ export default function Vehicles({ data }) {
     }
   }
 
+  const images_vehicle = async (id) => {
+    setLoading(true);
+    const cookie = cookies.admin_token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${cookie}`,
+      },
+    };
+    const res = await axios.post(`${API_URL}/images-vehicle`, { id }, config);
+    let dataImages = res.data.imagenes;
+    for (var n = 0; n < dataImages.length; n++) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", dataImages[n].download, true);
+      xhr.responseType = "blob";
+      xhr.onload = function () {
+        var urlCreator = window.URL || window.webkitURL;
+        var imageUrl = urlCreator.createObjectURL(this.response);
+        var tag = document.createElement('a');
+        tag.href = imageUrl;
+        tag.download = (Math.random() + 1).toString(36).substring(7);
+        document.body.appendChild(tag);
+        tag.click();
+        document.body.removeChild(tag);
+      }
+      xhr.send();
+    }
+    setLoading(false);
+  }
+
   const columnsGeneral: GridColDef[] = [
     {
       field: 'Imagen',
@@ -238,6 +267,17 @@ export default function Vehicles({ data }) {
               <Button
                 fullWidth
                 variant="contained"
+                color="info"
+                style={{ marginRight: 10 }}
+                onClick={() => images_vehicle(cellValues.row.id)}
+              >
+                Descargar imágenes
+              </Button>
+            </Typography>
+            <Typography style={{ marginTop: 5 }}>
+              <Button
+                fullWidth
+                variant="contained"
                 color="primary"
                 style={{ marginRight: 10 }}
                 onClick={() => {
@@ -260,7 +300,7 @@ export default function Vehicles({ data }) {
           </div>
         );
       },
-      width: 150,
+      width: 250,
     }
   ];
 
@@ -435,6 +475,14 @@ export default function Vehicles({ data }) {
             <Typography style={{ marginTop: 5 }}>
               <Button
                 variant="contained"
+                color="info"
+                style={{ marginRight: 10 }}
+                onClick={() => images_vehicle(cellValues.row.id)}
+              >
+                descargar imágenes
+              </Button>
+              <Button
+                variant="contained"
                 color="primary"
                 style={{ marginRight: 10 }}
                 onClick={() => {
@@ -443,6 +491,8 @@ export default function Vehicles({ data }) {
               >
                 Editar
               </Button>
+            </Typography>
+            <Typography style={{ marginTop: 5 }}>
               <Button
                 variant="contained"
                 color="error"
@@ -653,7 +703,7 @@ export default function Vehicles({ data }) {
                 rows={rows}
                 columns={columnMobile}
                 pageSize={perPage}
-                rowHeight={350}
+                rowHeight={400}
                 rowsPerPageOptions={[20, 50, 100]}
                 onPageSizeChange={(pageSize: number) => setPerPage(pageSize)}
                 disableSelectionOnClick
