@@ -203,8 +203,8 @@ export default function CreateService({ data }) {
                 error={(service.type === '') ? true : false}
                 onChange={(event) => setService({ ...service, type: event.target.value })}
               >
-                <MenuItem key={1} value={1}>Desktop</MenuItem>
-                <MenuItem key={2} value={2}>Mobile</MenuItem>
+                <MenuItem key={1} value={1}>Desktop (1366x500px)</MenuItem>
+                <MenuItem key={2} value={2}>Mobile (1200x1200px)</MenuItem>
               </TextField>
 
               <TextField
