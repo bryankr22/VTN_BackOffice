@@ -182,7 +182,7 @@ export default function Vehicles({ data }) {
     document.body.appendChild(link);
     link.click();
 
-    setTimeout(() => await axios.post(`${API_URL}/remove-zip`, { path: res.data.path }, config), 10000);
+    setTimeout(async() => await axios.post(`${API_URL}/remove-zip`, { path: res.data.path }, config), 10000);
 
     setLoading(false);
   }
