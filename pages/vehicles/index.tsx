@@ -174,24 +174,17 @@ export default function Vehicles({ data }) {
         Authorization: `Bearer ${cookie}`,
       },
     };
-    const res = await axios.post(`${API_URL}/images-vehicle`, { id }, config);
-    let dataImages = res.data.imagenes;
-    for (var n = 0; n < dataImages.length; n++) {
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", dataImages[n].download, true);
-      xhr.responseType = "blob";
-      xhr.onload = function () {
-        var urlCreator = window.URL || window.webkitURL;
-        var imageUrl = urlCreator.createObjectURL(this.response);
-        var tag = document.createElement('a');
-        tag.href = imageUrl;
-        tag.download = (Math.random() + 1).toString(36).substring(7);
-        document.body.appendChild(tag);
-        tag.click();
-        document.body.removeChild(tag);
-      }
-      xhr.send();
-    }
+    const res = await axios.post(`${API_URL}/download-zip`, { id }, config);
+    const url = `${API_URL.replace('admin', '')}${res.data.path}`;
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `images_${Date.now()}.zip`); //or any other extension
+    document.body.appendChild(link);
+    link.click();
+
+    const resRemove = await axios.post(`${API_URL}/remove-zip`, { path: res.data.path }, config);
+    console.log(resRemove);
+
     setLoading(false);
   }
 
