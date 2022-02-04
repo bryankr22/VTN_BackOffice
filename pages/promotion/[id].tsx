@@ -168,6 +168,7 @@ export default function CreatePromotion({ data }) {
             right: 0;
             bottom: 0;
             left: 0;
+            width: 100%;
           }
 
           .dropzone img {
