@@ -24,6 +24,17 @@ export default function Users({ data }) {
     return res.data.locked;
   }
 
+  const dependable = async (id) => {
+    const cookie = cookies.admin_token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${cookie}`,
+      },
+    };
+    const res = await axios.put(`${API_URL}/dependable-user`, { id }, config);
+    return res.data.dependable;
+  }
+
   const active = async (id) => {
     const cookie = cookies.admin_token;
     const config = {
@@ -78,6 +89,26 @@ export default function Users({ data }) {
               setLoading(true);
               const lockedUser = await locked(cellValues.row.id);
               cellValues.row.locked = lockedUser;
+              document.getElementById('title-users').click();
+              setLoading(false);
+            }}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+        );
+      },
+      width: 200,
+    },
+    {
+      field: 'confiable',
+      headerName: 'Confiable',
+      renderCell: (cellValues) => {
+        return (
+          <Checkbox
+            checked={(cellValues.row.confiable) ? true : false}
+            onChange={async () => {
+              setLoading(true);
+              const dependabledUser = await dependable(cellValues.row.id);
+              cellValues.row.confiable = dependabledUser;
               document.getElementById('title-users').click();
               setLoading(false);
             }}
