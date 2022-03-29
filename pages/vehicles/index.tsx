@@ -187,6 +187,17 @@ export default function Vehicles({ data }) {
     setLoading(false);
   }
 
+  const premium = async (id) => {
+    const cookie = cookies.admin_token;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${cookie}`,
+      },
+    };
+    const res = await axios.put(`${API_URL}/premium-user`, { id }, config);
+    return res.data.premium;
+  }
+
   const columnsGeneral: GridColDef[] = [
     {
       field: 'Imagen',
@@ -245,6 +256,26 @@ export default function Vehicles({ data }) {
         );
       },
       width: 100,
+    },
+    {
+      field: 'premium',
+      headerName: 'Premium',
+      renderCell: (cellValues) => {
+        return (
+          <Checkbox
+            checked={(cellValues.row.premium) ? true : false}
+            onChange={async () => {
+              setLoading(true);
+              const premiumdUser = await premium(cellValues.row.id);
+              cellValues.row.premium = premiumdUser;
+              document.getElementById('simple-tabpanel-0').click();
+              setLoading(false);
+            }}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+        );
+      },
+      width: 200,
     }
   ];
 
