@@ -182,7 +182,7 @@ export default function Vehicles({ data }) {
     document.body.appendChild(link);
     link.click();
 
-    setTimeout(async() => await axios.post(`${API_URL}/remove-zip`, { path: res.data.path }, config), 10000);
+    setTimeout(async () => await axios.post(`${API_URL}/remove-zip`, { path: res.data.path }, config), 10000);
 
     setLoading(false);
   }
@@ -490,6 +490,21 @@ export default function Vehicles({ data }) {
                 }
                 label="Confiable"
               />
+              <FormControlLabel
+                control={<Checkbox
+                  checked={(cellValues.row.premium) ? true : false}
+                  onChange={async () => {
+                    setLoading(true);
+                    const premiumdUser = await premium(cellValues.row.id);
+                    cellValues.row.premium = premiumdUser;
+                    document.getElementById('simple-tabpanel-0').click();
+                    setLoading(false);
+                  }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+                }
+                label="Premium"
+              />
             </Typography>
             <Typography color="textSecondary">{cellValues.row.nombreMarca} - {cellValues.row.nombreModelo}</Typography>
             <Typography color="textSecondary">{cellValues.row.ano}</Typography>
@@ -567,6 +582,21 @@ export default function Vehicles({ data }) {
                 }
                 label="Confiable"
               />
+              <FormControlLabel
+                control={<Checkbox
+                  checked={(cellValues.row.premium) ? true : false}
+                  onChange={async () => {
+                    setLoading(true);
+                    const premiumdUser = await premium(cellValues.row.id);
+                    cellValues.row.premium = premiumdUser;
+                    document.getElementById('simple-tabpanel-0').click();
+                    setLoading(false);
+                  }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+                }
+                label="Premium"
+              />
             </Typography>
             <Typography color="textSecondary">{cellValues.row.nombreMarca} - {cellValues.row.nombreModelo}</Typography>
             <Typography color="textSecondary">{cellValues.row.ano}</Typography>
@@ -643,6 +673,21 @@ export default function Vehicles({ data }) {
                 />
                 }
                 label="Confiable"
+              />
+              <FormControlLabel
+                control={<Checkbox
+                  checked={(cellValues.row.premium) ? true : false}
+                  onChange={async () => {
+                    setLoading(true);
+                    const premiumdUser = await premium(cellValues.row.id);
+                    cellValues.row.premium = premiumdUser;
+                    document.getElementById('simple-tabpanel-0').click();
+                    setLoading(false);
+                  }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+                }
+                label="Premium"
               />
             </Typography>
             <Typography color="textSecondary">{cellValues.row.nombreMarca} - {cellValues.row.nombreModelo}</Typography>
