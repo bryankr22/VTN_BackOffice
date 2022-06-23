@@ -56,7 +56,7 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
 
     let error = false;
     Object.entries(vehicle).map((item) => {
-      if (item[1] === '' && item[0] !== 'url') {
+      if (item[1] === '' && item[0] !== 'url' && item[0] !== 'placa') {
         error = true;
         return;
       }
@@ -437,6 +437,19 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
                   Usado
                 </MenuItem>
               </TextField>
+
+              {vehicle.condicion === 'Usado' &&
+                <TextField
+                  id="placa"
+                  label="Placa"
+                  required
+                  error={(vehicle.condicion === 'Usado' && vehicle.placa === '') ? true : false}
+                  variant="outlined"
+                  value={vehicle.placa}
+                  onChange={(event) => setVehicle({ ...vehicle, placa: event.target.value })}
+                />
+              }
+              
 
               <TextField
                 id="type_price"
