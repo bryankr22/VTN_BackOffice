@@ -56,7 +56,7 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
 
     let error = false;
     Object.entries(vehicle).map((item) => {
-      if (item[1] === '' && item[0] !== 'url' && item[0] !== 'placa') {
+      if (item[1] === '' && item[0] !== 'url' && item[0] !== 'placa' && item[0] !== 'peritaje') {
         error = true;
         return;
       }
