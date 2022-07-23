@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Box, TextField, MenuItem, Snackbar, Alert, Link, Typography, Breadcrumbs, Stack, Grid, FormControlLabel, Checkbox, FormGroup } from '@mui/material';
+import { Box, TextField, MenuItem, Snackbar, Alert, Link, Typography, Breadcrumbs, Stack, Grid, FormControlLabel, Checkbox, FormGroup, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { LoadingButton } from '@mui/lab';
 import AdminLayout from "../../layout/AdminLayout";
 import axios from 'axios';
@@ -16,6 +17,8 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
   const [cookies] = useCookies(["admin_token"]);
   const [vehicle, setVehicle] = useState(data.vehiculo);
 
+  console.log(data.imagenes);
+
   const [pictures, setPictures] = useState({
     picture1: data.imagenes.find((obj) => obj.order === 1).url,
     picture2: data.imagenes.find((obj) => obj.order === 2).url,
@@ -27,6 +30,11 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
     picture8: data.imagenes.find((obj) => obj.order === 8).url,
     picture9: data.imagenes.find((obj) => obj.order === 9).url,
     picture10: data.imagenes.find((obj) => obj.order === 10).url,
+    picture11: data.imagenes.find((obj) => obj.order === 11).url,
+    picture12: data.imagenes.find((obj) => obj.order === 12).url,
+    picture13: data.imagenes.find((obj) => obj.order === 13).url,
+    picture14: data.imagenes.find((obj) => obj.order === 14).url,
+    picture15: data.imagenes.find((obj) => obj.order === 15).url,
   });
 
   const [loading, setLoading] = useState(false);
@@ -80,6 +88,11 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
     const file8: any = document.getElementById('file8');
     const file9: any = document.getElementById('file9');
     const file10: any = document.getElementById('file10');
+    const file11: any = document.getElementById('file11');
+    const file12: any = document.getElementById('file12');
+    const file13: any = document.getElementById('file13');
+    const file14: any = document.getElementById('file14');
+    const file15: any = document.getElementById('file15');
     const peritaje: any = document.getElementById('peritaje');
 
 
@@ -96,6 +109,11 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
     formData.append('image8', file8.files[0]);
     formData.append('image9', file9.files[0]);
     formData.append('image10', file10.files[0]);
+    formData.append('image11', file11.files[0]);
+    formData.append('image12', file12.files[0]);
+    formData.append('image13', file13.files[0]);
+    formData.append('image14', file14.files[0]);
+    formData.append('image15', file15.files[0]);
     formData.append('peritaje', peritaje.files[0]);
 
     const cookie = cookies.admin_token;
@@ -122,6 +140,11 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
       file8.value = null;
       file9.value = null;
       file10.value = null;
+      file11.value = null;
+      file12.value = null;
+      file13.value = null;
+      file14.value = null;
+      file15.value = null;
     }
     setLoading(false);
   }
@@ -155,6 +178,29 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
     setVehicle({ ...vehicle, departamento: value, ciudad_id: (value !== vehicle.departamento) ? '' : vehicle.ciudad_id });
     const newOptions = data.ciudades.filter((obj) => obj.id_departamento === value);
     setOptionsCities(newOptions);
+  }
+
+  const deleteImage = async (order, id) => {
+    let text = "Estás seguro de eliminar esta imagen? ";
+    if (confirm(text) == true) {
+      const cookie = cookies.admin_token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${cookie}`
+        }
+      };
+      const data = {
+        id,
+        order
+      }
+      const res = await axios.post(`${API_URL}/delete-image-vehicle`, data, config);
+      setSnackBar({
+        open: true,
+        type: res.data.status ? 'success' : 'error',
+        message: res.data.message
+      });
+      location.reload();
+    }
   }
 
   const breadcrumbs = [
@@ -235,18 +281,43 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
               >
                 <div className="dropzone">
                   {pictures.picture1 === '' && <div>Imagen principal</div>}
+                  {pictures.picture1 !== '' &&
+                    <IconButton onClick={() => deleteImage(1, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                   <input type="file" name="file1" id="file1" accept="image/*" onChange={(e) => onChangeFile('picture1', e)} />
                   {pictures.picture1 !== '' && <div><img src={pictures.picture1} onClick={() => document.getElementById('file1').click()} /></div>}
                 </div>
                 <div className="dropzone">
                   {pictures.picture5 === '' && <div>5</div>}
+                  {pictures.picture5 !== '' &&
+                    <IconButton onClick={() => deleteImage(5, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                   <input type="file" name="file5" id="file5" accept="image/*" onChange={(e) => onChangeFile('picture5', e)} />
                   {pictures.picture5 !== '' && <div><img src={pictures.picture5} onClick={() => document.getElementById('file5').click()} /></div>}
                 </div>
                 <div className="dropzone">
                   {pictures.picture9 === '' && <div>9</div>}
+                  {pictures.picture9 !== '' &&
+                    <IconButton onClick={() => deleteImage(9, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                   <input type="file" name="file9" id="file9" accept="image/*" onChange={(e) => onChangeFile('picture9', e)} />
                   {pictures.picture9 !== '' && <div><img src={pictures.picture9} onClick={() => document.getElementById('file9').click()} /></div>}
+                </div>
+                <div className="dropzone">
+                  {pictures.picture14 === '' && <div>14</div>}
+                  {pictures.picture14 !== '' &&
+                    <IconButton onClick={() => deleteImage(14, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                  <input type="file" name="file14" id="file14" accept="image/*" onChange={(e) => onChangeFile('picture14', e)} />
+                  {pictures.picture14 !== '' && <div><img src={pictures.picture14} onClick={() => document.getElementById('file14').click()} /></div>}
                 </div>
               </Box>
             </Grid>
@@ -261,18 +332,43 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
               >
                 <div className="dropzone">
                   {pictures.picture2 === '' && <div>2</div>}
+                  {pictures.picture2 !== '' &&
+                    <IconButton onClick={() => deleteImage(2, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                   <input type="file" name="file2" id="file2" accept="image/*" onChange={(e) => onChangeFile('picture2', e)} />
                   {pictures.picture2 !== '' && <div><img src={pictures.picture2} onClick={() => document.getElementById('file2').click()} /></div>}
                 </div>
                 <div className="dropzone">
                   {pictures.picture6 === '' && <div>6</div>}
+                  {pictures.picture6 !== '' &&
+                    <IconButton onClick={() => deleteImage(6, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                   <input type="file" name="file6" id="file6" accept="image/*" onChange={(e) => onChangeFile('picture6', e)} />
                   {pictures.picture6 !== '' && <div><img src={pictures.picture6} onClick={() => document.getElementById('file6').click()} /></div>}
                 </div>
                 <div className="dropzone">
                   {pictures.picture10 === '' && <div>10</div>}
+                  {pictures.picture10 !== '' &&
+                    <IconButton onClick={() => deleteImage(10, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                   <input type="file" name="file10" id="file10" accept="image/*" onChange={(e) => onChangeFile('picture10', e)} />
                   {pictures.picture10 !== '' && <div><img src={pictures.picture10} onClick={() => document.getElementById('file10').click()} /></div>}
+                </div>
+                <div className="dropzone">
+                  {pictures.picture13 === '' && <div>13</div>}
+                  {pictures.picture13 !== '' &&
+                    <IconButton onClick={() => deleteImage(13, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                  <input type="file" name="file13" id="file13" accept="image/*" onChange={(e) => onChangeFile('picture13', e)} />
+                  {pictures.picture13 !== '' && <div><img src={pictures.picture13} onClick={() => document.getElementById('file13').click()} /></div>}
                 </div>
               </Box>
             </Grid>
@@ -287,13 +383,43 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
               >
                 <div className="dropzone">
                   {pictures.picture3 === '' && <div>3</div>}
+                  {pictures.picture3 !== '' &&
+                    <IconButton onClick={() => deleteImage(3, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                   <input type="file" name="file3" id="file3" accept="image/*" onChange={(e) => onChangeFile('picture3', e)} />
                   {pictures.picture3 !== '' && <div><img src={pictures.picture3} onClick={() => document.getElementById('file3').click()} /></div>}
                 </div>
                 <div className="dropzone">
                   {pictures.picture7 === '' && <div>7</div>}
+                  {pictures.picture7 !== '' &&
+                    <IconButton onClick={() => deleteImage(7, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                   <input type="file" name="file7" id="file7" accept="image/*" onChange={(e) => onChangeFile('picture7', e)} />
                   {pictures.picture7 !== '' && <div><img src={pictures.picture7} onClick={() => document.getElementById('file7').click()} /></div>}
+                </div>
+                <div className="dropzone">
+                  {pictures.picture11 === '' && <div>11</div>}
+                  {pictures.picture11 !== '' &&
+                    <IconButton onClick={() => deleteImage(11, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                  <input type="file" name="file11" id="file11" accept="image/*" onChange={(e) => onChangeFile('picture11', e)} />
+                  {pictures.picture11 !== '' && <div><img src={pictures.picture11} onClick={() => document.getElementById('file11').click()} /></div>}
+                </div>
+                <div className="dropzone">
+                  {pictures.picture15 === '' && <div>15</div>}
+                  {pictures.picture15 !== '' &&
+                    <IconButton onClick={() => deleteImage(15, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                  <input type="file" name="file15" id="file15" accept="image/*" onChange={(e) => onChangeFile('picture15', e)} />
+                  {pictures.picture15 !== '' && <div><img src={pictures.picture15} onClick={() => document.getElementById('file15').click()} /></div>}
                 </div>
               </Box>
             </Grid>
@@ -308,13 +434,33 @@ export default function UpdatedVehicle({ data, marks, models, cities }) {
               >
                 <div className="dropzone">
                   {pictures.picture4 === '' && <div>4</div>}
+                  {pictures.picture4 !== '' &&
+                    <IconButton onClick={() => deleteImage(4, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                   <input type="file" name="file4" id="file4" accept="image/*" onChange={(e) => onChangeFile('picture4', e)} />
                   {pictures.picture4 !== '' && <div><img src={pictures.picture4} onClick={() => document.getElementById('file4').click()} /></div>}
                 </div>
                 <div className="dropzone">
                   {pictures.picture8 === '' && <div>8</div>}
+                  {pictures.picture8 !== '' &&
+                    <IconButton onClick={() => deleteImage(8, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
                   <input type="file" name="file8" id="file8" accept="image/*" onChange={(e) => onChangeFile('picture8', e)} />
                   {pictures.picture8 !== '' && <div><img src={pictures.picture8} onClick={() => document.getElementById('file8').click()} /></div>}
+                </div>
+                <div className="dropzone">
+                  {pictures.picture12 === '' && <div>12</div>}
+                  {pictures.picture12 !== '' &&
+                    <IconButton onClick={() => deleteImage(12, vehicle.id)} variant="contained" color="error" aria-label="delete" style={{ position: 'absolute', zIndex: 1, right: '-15px', top: '-20px' }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                  <input type="file" name="file12" id="file12" accept="image/*" onChange={(e) => onChangeFile('picture12', e)} />
+                  {pictures.picture12 !== '' && <div><img src={pictures.picture12} onClick={() => document.getElementById('file12').click()} /></div>}
                 </div>
               </Box>
             </Grid>
